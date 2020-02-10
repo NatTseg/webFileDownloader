@@ -1,12 +1,13 @@
 import requests
 import easygui
 import os
+import os.path
 from urllib import request, response, error, parse
 from urllib.parse import urljoin
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
-ListofTypes = ['mp3','wav','rar','zip','csv','exe','jpeg','jpg','png','svg','gif','bmp','html','ppt','mp4','doc','docx','pdf','txt']
+ListofTypes = ['mp3','wav','rar','zip','csv','exe','jpeg','jpg','png','svg','gif','bmp','html','ppt','mp4','doc','docx','pdf','txt','out']
 while(True):
     url = input("Paste the url to extract files from (type 'exit' to close at any point): ") #change this url of course
     if(url == 'exit'):
@@ -28,7 +29,9 @@ while(True):
         folder = input("Enter the name of the folder to be created (Files will be downloaded here): ")
         if folder=='exit':
             break
-        os.mkdir('C:/users/ntseg/desktop/'+folder)
+        path = 'C:/users/ntseg/desktop/'+folder
+        if(not os.path.isdir(path)):
+            os.mkdir(path)
         html = urlopen(url)
         soup = BeautifulSoup(html, "lxml")
         titles = soup.findAll('a')
@@ -38,10 +41,10 @@ while(True):
                 filecount+=1
                 urlToDownload = urljoin(url,i.get('href'))
                 r = requests.get(urlToDownload, allow_redirects=True)
-                open('C:/users/ntseg/desktop/'+folder+'/'+i.get('href'),'wb').write(r.content) #change the directory to be saved
+                open(path+'/'+i.get('href'),'wb').write(r.content) #change the directory to be saved
         if(filecount == 0):
             print("Filetype "+fileType+" not found on the webpage.")
-            os.rmdir('C:/users/ntseg/desktop/'+folder)
+            os.rmdir(path)
         else:
             print("Download complete!")
         response = input("Would you like to save another type of file from the same page? (y/n): ")
